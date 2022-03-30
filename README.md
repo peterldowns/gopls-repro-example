@@ -21,7 +21,7 @@ OS: Darwin arm64 21.3.0
 
 ## gopls reporting `compiler(InvalidShiftCount)` errors 
 
-### Steps to reproduce:
+### Steps to reproduce
 
 Quit VSCode entirely, set up a shell with `go@1.18` and `gopls@0.8.1`
 
@@ -83,3 +83,39 @@ You should see 18 Problems detected in the workspace, all referencing `InvalidSh
 ### Expected behavior
 
 I would expect there to be 0 reported problems in both cases.
+
+## vscode-go reporting Unable to read file go.mod in GOMODCACHE
+
+### Steps to reproduce
+
+Quit VSCode entirely, set up a shell with `go@1.18` and `gopls@0.8.1`
+
+```bash
+cd /path/to/this/repo
+
+# If not using nix, set up GO* env variables
+export GOPATH=/path/to/this/repo/.go
+export GOROOT=
+export PATH=$(go env GOPATH)/bin:$PATH
+
+# Clear old modules and binaries
+sudo rm -rf $GOPATH
+
+# Launch VSCode
+code .
+```
+
+Now view the `Go` output. You should see a huge number of error lines that all look like the following, complaining about being unable to read a `go.mod` file:
+
+```
+Failed while handling 'onDidOpenTextDocument': EntryNotFound (FileSystemError): Unable to read file '/Users/pld/code/gopls-repro-example/.go/pkg/mod/go.mod' (Error: Unable to resolve nonexistent file '/Users/pld/code/gopls-repro-example/.go/pkg/mod/go.mod')
+Failed while handling 'FileSystemWatcher.onDidCreate': EntryNotFound (FileSystemError): Unable to read file '/Users/pld/code/gopls-repro-example/.go/pkg/mod/go.mod' (Error: Unable to resolve nonexistent file '/Users/pld/code/gopls-repro-example/.go/pkg/mod/go.mod')
+```
+
+![](./images/root-go-mod-error.png)
+
+### Expected behavor
+
+I would expect that any modules in the `$GOMODCACHE`/`$GOPATH` would not trigger any problems in the vscode-go extension. At work, we use a shared nix config to set `$GOPATH` to `$repoRoot/.go` this way so that our developers do not end up clobbering their system's `$GOMODCACHE`/`$GOPATH` while working on our project.
+
+I have confirmed that setting `$GOPATH` to a folder outside of the repository resolves this problem, but unfortunately it is difficult for us to do that with our direnv/lorri/nix setup.
