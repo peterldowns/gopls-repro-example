@@ -1,0 +1,18 @@
+{
+  "go.autocompleteUnimportedPackages": true,
+  "go.lintOnSave": "package",
+  "go.buildOnSave": "off",
+  "go.vetOnSave": "off",
+  "go.useLanguageServer": true,
+  "go.toolsManagement.autoUpdate": false,
+  "go.toolsManagement.checkForUpdates": "off",
+  "gopls": {
+    "formatting.gofumpt": true,
+    "formatting.local": "github.com/peterldowns/gopls-repro-example",
+    "build.directoryFilters": ["-", "+backend"],
+    "build.experimentalWorkspaceModule": true
+  },
+  "[go]": {
+    "editor.formatOnSave": true
+  }
+}
